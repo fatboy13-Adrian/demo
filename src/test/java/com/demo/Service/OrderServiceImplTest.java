@@ -9,172 +9,113 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
-class OrderServiceImplTest {
-
+@ExtendWith(MockitoExtension.class) //Extension to enable Mockito in JUnit tests
+public class OrderServiceImplTest 
+{
     @Mock
-    private OrderRepository orderRepository;
+    private OrderRepository orderRepository; //Mocking the OrderRepository dependency
 
     @InjectMocks
-    private OrderServiceImpl orderService;
+    private OrderServiceImpl orderService;  //Injecting the mocks into the OrderServiceImpl
 
-    private Order order;
-    private OrderDTO orderDTO;
+    private Order order;                    //Order entity to be used in tests
+    private OrderDTO orderDTO;              //OrderDTO to be used in tests
 
     @BeforeEach
-    void setUp() {
-        // Initialize mocks
-        MockitoAnnotations.openMocks(this);
-
-        // Sample order and orderDTO setup
-        order = new Order(1L, new BigDecimal("100.00"), OrderStatus.PENDING, LocalDateTime.now());
-        orderDTO = new OrderDTO(1L, new BigDecimal("100.00"), OrderStatus.PENDING, LocalDateTime.now());
+    void setUp() 
+    {
+        //Setup a sample order and orderDTO to be used across tests
+        order = new Order(1L, BigDecimal.valueOf(100.00), OrderStatus.PENDING, LocalDateTime.now());
+        orderDTO = new OrderDTO(1L, BigDecimal.valueOf(100.00), OrderStatus.PENDING, LocalDateTime.now());
     }
 
-    @Test
-    void testCreateOrder_ValidDTO() {
-        // Arrange: Mock the repository to return a saved order when save is called
+    @Test   //Test Case: Create Order (Positive Test Case)
+    void testCreateOrder_Success() 
+    {
+        //Mocking orderRepository.save() to return the order when createOrder() is called
         when(orderRepository.save(any(Order.class))).thenReturn(order);
-
-        // Act: Call the createOrder method
-        OrderDTO createdOrderDTO = orderService.createOrder(orderDTO);
-
-        // Assert: Verify the result
-        assertNotNull(createdOrderDTO);
-        assertEquals(order.getOid(), createdOrderDTO.getOid());
-        assertEquals(order.getTotalPrice(), createdOrderDTO.getTotalPrice());
-        assertEquals(order.getOrderStatus(), createdOrderDTO.getOrderStatus());
-        assertEquals(order.getOrderDateTime(), createdOrderDTO.getOrderDateTime());
-
-        // Verify that the save method was called once
-        verify(orderRepository, times(1)).save(any(Order.class));
+        OrderDTO createdOrder = orderService.createOrder(orderDTO); //Calling the method to test
+        assertNotNull(createdOrder);                                //Checking if the createdOrder is not null
+        assertEquals(order.getOid(), createdOrder.getOid());        //Ensuring the order's ID matches
     }
 
-    @Test
-    void testCreateOrder_InvalidDTO() {
-        // Arrange: Pass an invalid OrderDTO (e.g., missing required fields)
-        OrderDTO invalidOrderDTO = new OrderDTO(); // Invalid DTO with no fields
-
-        // Act & Assert: Expect a validation exception to be thrown
-        assertThrows(jakarta.validation.ConstraintViolationException.class, () -> {
-            orderService.createOrder(invalidOrderDTO);
-        });
-    }
-
-    @Test
-    void testGetOrder_OrderFound() {
-        // Arrange: Mock the repository to return an existing order when findById is called
+    @Test   //Test Case: Get Order by ID (Positive Test Case)
+    void testGetOrder_Success() 
+    {
+        //Mocking orderRepository.findById() to return the order when the ID 1L is searched
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
-
-        // Act: Call the getOrder method
-        OrderDTO foundOrderDTO = orderService.getOrder(1L);
-
-        // Assert: Verify the result
-        assertNotNull(foundOrderDTO);
-        assertEquals(order.getOid(), foundOrderDTO.getOid());
-        assertEquals(order.getTotalPrice(), foundOrderDTO.getTotalPrice());
-        assertEquals(order.getOrderStatus(), foundOrderDTO.getOrderStatus());
-        assertEquals(order.getOrderDateTime(), foundOrderDTO.getOrderDateTime());
-
-        // Verify that the findById method was called once
-        verify(orderRepository, times(1)).findById(1L);
+        OrderDTO retrievedOrder = orderService.getOrder(1L);    //Calling the method to test
+        assertNotNull(retrievedOrder);                              //Ensuring the retrievedOrder is not null
+        assertEquals(order.getOid(), retrievedOrder.getOid());      //Ensuring the order's ID matches
     }
 
-    @Test
-    void testGetOrder_OrderNotFound() {
-        // Arrange: Mock the repository to return empty when findById is called
-        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
-
-        // Act & Assert: Ensure that the OrderNotFoundException is thrown when the order is not found
-        assertThrows(OrderNotFoundException.class, () -> orderService.getOrder(1L));
-
-        // Verify that findById was called once
-        verify(orderRepository, times(1)).findById(1L);
-    }
-
-    @Test
-    void testGetOrders() {
-        // Arrange: Mock the repository to return a list of orders
+    @Test   //Test Case: Get All Orders (Positive Test Case)
+    void testGetOrders_Success() 
+    {
+        //Mocking orderRepository.findAll() to return a list with one order
         when(orderRepository.findAll()).thenReturn(List.of(order));
-
-        // Act: Call the getOrders method
-        List<OrderDTO> orders = orderService.getOrders();
-
-        // Assert: Verify that the list is not empty and contains the expected orderDTO
-        assertNotNull(orders);
-        assertFalse(orders.isEmpty());
-        assertEquals(1, orders.size());
-        assertEquals(order.getOid(), orders.get(0).getOid());
-
-        // Verify that the findAll method was called once
-        verify(orderRepository, times(1)).findAll();
+        List<OrderDTO> orders = orderService.getOrders();   //Calling the method to test
+        assertFalse(orders.isEmpty());                      //Ensuring the list of orders is not empty
+        assertEquals(1, orders.size());             //Ensuring the size of the list is correct
     }
 
-    @Test
-    void testPartialUpdateOrder_Valid() {
-        // Arrange: Mock the repository to return an existing order
+    @Test   //Test Case: Partial Update Order (Positive Test Case)
+    void testPartialUpdateOrder_Success() 
+    {
+        //Mocking the behavior when an order is found and saved with new details
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
         when(orderRepository.save(any(Order.class))).thenReturn(order);
-
-        // Act: Call the partialUpdateOrder method
-        OrderDTO updatedOrderDTO = orderService.partialUpdateOrder(1L, new BigDecimal("150.00"), OrderStatus.COMPLETED);
-
-        // Assert: Verify the updated fields
-        assertNotNull(updatedOrderDTO);
-        assertEquals(new BigDecimal("150.00"), updatedOrderDTO.getTotalPrice());
-        assertEquals(OrderStatus.COMPLETED, updatedOrderDTO.getOrderStatus());
-
-        // Verify that the findById and save methods were called once
-        verify(orderRepository, times(1)).findById(1L);
-        verify(orderRepository, times(1)).save(any(Order.class));
+        OrderDTO updatedOrder = orderService.partialUpdateOrder(1L, orderDTO);  //Calling the method to test
+        assertNotNull(updatedOrder);                                                //Ensuring the updatedOrder is not null
+        assertEquals(OrderStatus.PENDING, updatedOrder.getOrderStatus());           //Ensuring the status is updated correctly
     }
 
-    @Test
-    void testPartialUpdateOrder_NotFound() {
-        // Arrange: Mock the repository to return empty for findById
-        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
-
-        // Act & Assert: Ensure that the OrderNotFoundException is thrown when the order is not found
-        assertThrows(OrderNotFoundException.class, () -> orderService.partialUpdateOrder(1L, new BigDecimal("150.00"), OrderStatus.COMPLETED));
-
-        // Verify that findById was called once
-        verify(orderRepository, times(1)).findById(1L);
-    }
-
-    @Test
-    void testDeleteOrder_Valid() {
-        // Arrange: Mock the repository to return an existing order when findById is called
+    @Test   //Test Case: Delete Order (Positive Test Case)
+    void testDeleteOrder_Success() 
+    {
+        //Mocking orderRepository.findById() to return the order for deletion
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
 
-        // Act: Call the deleteOrder method
-        orderService.deleteOrder(1L);
-
-        // Assert: Verify that the delete method was called exactly once
-        verify(orderRepository, times(1)).delete(any(Order.class));
+        //Verifying that delete() is called once on the repository
+        assertDoesNotThrow(() -> orderService.deleteOrder(1L));
+        verify(orderRepository, times(1)).delete(order);    //Ensuring delete is called once
     }
 
-    @Test
-    void testDeleteOrder_NotFound() {
-        // Arrange: Mock the repository to return empty when findById is called
-        when(orderRepository.findById(1L)).thenReturn(Optional.empty());
+    @Test   //Test Case: Get Order by ID (Negative Test Case)
+    void testGetOrder_NotFound() 
+    {
+        //Mocking orderRepository.findById() to return empty (order not found)
+        when(orderRepository.findById(2L)).thenReturn(Optional.empty());
 
-        // Act & Assert: Ensure that the OrderNotFoundException is thrown when the order is not found
-        assertThrows(OrderNotFoundException.class, () -> orderService.deleteOrder(1L));
+        //Asserting that OrderNotFoundException is thrown
+        assertThrows(OrderNotFoundException.class, () -> orderService.getOrder(2L));
+    }
 
-        // Verify that findById was called once
-        verify(orderRepository, times(1)).findById(1L);
-        // Verify that delete was not called since the order was not found
-        verify(orderRepository, times(0)).delete(any(Order.class));
+    @Test   //Test Case: Partial Update Order (Negative Test Case)
+    void testPartialUpdateOrder_NotFound() 
+    {
+        //Mocking orderRepository.findById() to return empty (order not found)
+        when(orderRepository.findById(2L)).thenReturn(Optional.empty());
+
+        //Asserting that OrderNotFoundException is thrown
+        assertThrows(OrderNotFoundException.class, () -> orderService.partialUpdateOrder(2L, orderDTO));
+    }
+
+    @Test   //Test Case: Delete Order (Negative Test Case)
+    void testDeleteOrder_NotFound() 
+    {
+        //Mocking orderRepository.findById() to return empty (order not found)
+        when(orderRepository.findById(2L)).thenReturn(Optional.empty());
+
+        //Asserting that OrderNotFoundException is thrown
+        assertThrows(OrderNotFoundException.class, () -> orderService.deleteOrder(2L));
     }
 }

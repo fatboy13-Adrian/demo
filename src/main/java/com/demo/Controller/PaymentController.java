@@ -1,53 +1,59 @@
 package com.demo.Controller;
-
 import com.demo.DTO.PaymentDTO;
-import com.demo.Enum.PaymentMode;
-import com.demo.Enum.PaymentStatus;
 import com.demo.Service.PaymentServiceImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/payments")
-public class PaymentController {
-
+@RequestMapping("/payments")  //Base URL for payment-related API endpoints
+public class PaymentController 
+{
     private final PaymentServiceImpl paymentService;
 
-    public PaymentController(PaymentServiceImpl paymentService) {
+    //Constructor injection of the PaymentServiceImpl to handle business logic
+    public PaymentController(PaymentServiceImpl paymentService) 
+    {
         this.paymentService = paymentService;
     }
 
-    @PostMapping
-    public ResponseEntity<PaymentDTO> createPayment(@RequestBody PaymentDTO paymentDTO) {
-        return ResponseEntity.ok(paymentService.createPayment(paymentDTO));
+    //Endpoint to create a new payment
+    @PostMapping  //Maps HTTP POST requests to this method
+    public ResponseEntity<PaymentDTO> createPayment(@RequestBody PaymentDTO paymentDTO) 
+    {
+        //Call service layer to create the payment and return the created PaymentDTO
+        return ResponseEntity.ok(paymentService.createPayment(paymentDTO));  
     }
 
-    @GetMapping("/{pid}")
-    public ResponseEntity<PaymentDTO> getPayment(@PathVariable Long pid) {
-        return ResponseEntity.ok(paymentService.getPayment(pid));
+    //Endpoint to retrieve a payment by its ID
+    @GetMapping("/{pid}")   //Maps HTTP GET requests with a payment ID parameter
+    public ResponseEntity<PaymentDTO> getPayment(@PathVariable Long pid) 
+    {
+        //Call service layer to fetch the payment by its ID and return the PaymentDTO
+        return ResponseEntity.ok(paymentService.getPayment(pid));  
     }
 
-    @GetMapping
-    public ResponseEntity<List<PaymentDTO>> getPayments() {
-        return ResponseEntity.ok(paymentService.getPayments());
+    //Endpoint to retrieve all payments
+    @GetMapping //Maps HTTP GET requests to retrieve a list of all payments
+    public ResponseEntity<List<PaymentDTO>> getPayments() 
+    {
+        //Call service layer to fetch all payments and return as a list of PaymentDTOs
+        return ResponseEntity.ok(paymentService.getPayments());  
     }
 
-    @PatchMapping("/{pid}")
-    public ResponseEntity<PaymentDTO> partialUpdatePayment(
-            @PathVariable Long pid,
-            @RequestParam(required = false) BigDecimal amount,
-            @RequestParam(required = false) PaymentMode paymentMode,
-            @RequestParam(required = false) PaymentStatus paymentStatus,
-            @RequestBody(required = false) PaymentDTO paymentDTO) {
-        return ResponseEntity.ok(paymentService.partialUpdatePayment(pid, amount, paymentMode, paymentStatus, paymentDTO));
+    //Endpoint to partially update a payment (e.g., update payment status)
+    @PatchMapping("/{pid}")     //Maps HTTP PATCH requests with a payment ID parameter for partial update
+    public ResponseEntity<PaymentDTO> partialUpdatePayment(@PathVariable Long pid, @RequestBody PaymentDTO paymentDTO) 
+    {
+        //Call service layer to partially update the payment and return the updated PaymentDTO
+        return ResponseEntity.ok(paymentService.partialUpdatePayment(pid, paymentDTO));
     }
 
-    @DeleteMapping("/{pid}")
-    public ResponseEntity<Void> deletePayment(@PathVariable Long pid) {
-        paymentService.deletePayment(pid);
-        return ResponseEntity.noContent().build();
+    //Endpoint to delete a payment by its ID
+    @DeleteMapping("/{pid}")    //Maps HTTP DELETE requests with a payment ID parameter
+    public ResponseEntity<Void> deletePayment(@PathVariable Long pid) 
+    {
+        paymentService.deletePayment(pid);           //Call service layer to delete the payment by its ID
+        return ResponseEntity.noContent().build();  //Return HTTP status 204 (No Content) indicating successful deletion      
     }
 }

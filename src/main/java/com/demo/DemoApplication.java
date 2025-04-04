@@ -1,7 +1,9 @@
 package com.demo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
+@ComponentScan(basePackages = "com.demo")
 @SpringBootApplication	//This annotation marks the class as a Spring Boot application. 
 //It combines @Configuration, @EnableAutoConfiguration, and @ComponentScan.
 public class DemoApplication

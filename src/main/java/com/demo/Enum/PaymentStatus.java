@@ -2,5 +2,5 @@ package com.demo.Enum;
 
 public enum PaymentStatus 
 {
-    PAID, UNPAID, OUTSTANDING
+    PAID, UNPAID, OUTSTANDING, PENDING
 }

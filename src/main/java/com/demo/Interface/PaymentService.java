@@ -1,17 +1,12 @@
 package com.demo.Interface;
-
-import java.math.BigDecimal;
 import java.util.List;
-
 import com.demo.DTO.PaymentDTO;
-import com.demo.Enum.PaymentMode;
-import com.demo.Enum.PaymentStatus;
 
 public interface PaymentService 
 {
-    PaymentDTO createPayment(PaymentDTO paymentDTO);
-    PaymentDTO getPayment(Long pid);
-    List<PaymentDTO> getPayments();
-    PaymentDTO partialUpdatePayment(Long pid, BigDecimal amount, PaymentMode paymentMode, PaymentStatus paymentStatus, PaymentDTO paymentDTO);
-    void deletePayment(Long pid);
+    PaymentDTO createPayment(PaymentDTO paymentDTO);                    //Method to create a new payment.
+    PaymentDTO getPayment(Long pid);                                    //Method to get a specific payment by its ID (pid). 
+    List<PaymentDTO> getPayments();                                     //Method to get all payments. 
+    PaymentDTO partialUpdatePayment(Long pid, PaymentDTO paymentDTO);   //Method to partially update an existing payment. 
+    void deletePayment(Long pid);                                       //Method to delete a payment by its ID (pid).
 }

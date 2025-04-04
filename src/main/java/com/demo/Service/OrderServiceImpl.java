@@ -1,121 +1,106 @@
 package com.demo.Service;
-
+import java.util.List;
+import java.util.Optional; 
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.demo.DTO.OrderDTO;
 import com.demo.Entity.Order;
-import com.demo.Enum.OrderStatus;
 import com.demo.Exception.Order.OrderNotFoundException;
 import com.demo.Interface.OrderService;
 import com.demo.Repository.OrderRepository;
-import com.demo.DTO.OrderDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 import jakarta.validation.Valid;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-@Service
-@Validated // This annotation is typically used to validate method parameters in the service class
-public class OrderServiceImpl implements OrderService {
-
+@Service  //Marks this class as a Spring service for dependency injection
+public class OrderServiceImpl implements OrderService 
+{
     private final OrderRepository orderRepository;
 
-    @Autowired
-    public OrderServiceImpl(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
+    @Autowired  //Constructor injection of the OrderRepository
+    public OrderServiceImpl(OrderRepository orderRepository) 
+    {
+        this.orderRepository = orderRepository;  //Initialize the repository to interact with the database
     }
 
-    // Create a new order
-    @Override
-    public OrderDTO createOrder(@Valid OrderDTO orderDTO) {
-        // Map OrderDTO to Order entity
+    @Override  //Method to create a new order
+    public OrderDTO createOrder(@Valid OrderDTO orderDTO) 
+    {
+        //Map OrderDTO to Order entity
         Order order = new Order(orderDTO.getOid(), orderDTO.getTotalPrice(), orderDTO.getOrderStatus(), orderDTO.getOrderDateTime());
-        
-        // Save the order and return the DTO
+
+        //Save the order entity to the database
         order = orderRepository.save(order);
-        return convertToDTO(order);
+
+        //Convert the saved Order entity to OrderDTO and return it
+        return convertToDTO(order);  //Return the DTO version of the created order
     }
 
-    // Retrieve an order by its ID
-    @Override
-    public OrderDTO getOrder(Long oid) {
-        // Fetch the order from the repository
-        Optional<Order> orderOptional = orderRepository.findById(oid);
+    @Override   //Method to retrieve an order by its ID
+    public OrderDTO getOrder(Long oid) 
+    {
+        Optional<Order> order = orderRepository.findById(oid);  //Fetch the order from the repository by its ID
 
-        // If the order is not found, throw a custom exception
-        if (orderOptional.isEmpty()) {
-            throw new OrderNotFoundException(oid);
-        }
+        //If order is not found, throw a custom OrderNotFoundException
+        if(order.isEmpty())
+            throw new OrderNotFoundException(oid);              //Throw exception if order is not found
 
-        // Convert to DTO and return
-        return convertToDTO(orderOptional.get());
+        //Convert the found Order entity to OrderDTO and return it
+        return convertToDTO(order.get());                       //Return the DTO of the fetched order
     }
 
-    // Get all orders
-    @Override
-    public List<OrderDTO> getOrders() {
-        // Fetch all orders from the repository
-        List<Order> orders = orderRepository.findAll();
+    @Override  //Method to retrieve all orders in the system
+    public List<OrderDTO> getOrders() 
+    {
+        List<Order> orders = orderRepository.findAll();                                 //Fetch all orders from the repository
 
-        // Convert and return as a list of OrderDTOs
-        return orders.stream()
-                     .map(this::convertToDTO)
-                     .collect(Collectors.toList());
+        //Convert the list of Order entities to a list of OrderDTOs and return it
+        return orders.stream().map(this::convertToDTO).collect(Collectors.toList());    //Collect the results into a list and return it
     }
 
-    // Partial update of an existing order
-    @Override
-    public OrderDTO partialUpdateOrder(Long oid, BigDecimal totalPrice, OrderStatus orderStatus) {
-        // Fetch the existing order
-        Optional<Order> existingOrderOptional = orderRepository.findById(oid);
+    @Override  //Method to partially update an existing order
+    public OrderDTO partialUpdateOrder(Long oid, OrderDTO orderDTO) 
+    {
+        Optional<Order> existingOrder = orderRepository.findById(oid);  //Fetch the existing order by its ID
 
-        // If not found, throw exception
-        if (existingOrderOptional.isEmpty()) {
-            throw new OrderNotFoundException(oid);
-        }
+        //If order is not found, throw an OrderNotFoundException
+        if(existingOrder.isEmpty()) 
+            throw new OrderNotFoundException(oid);                      //Throw exception if the order to update is not found
 
-        // Get the existing order
-        Order existingOrder = existingOrderOptional.get();
+        //Get the existing order entity
+        Order order = existingOrder.get();                      
 
-        // Update the fields if new values are provided
-        if (totalPrice != null) {
-            existingOrder.setTotalPrice(totalPrice);
-        }
-        if (orderStatus != null) {
-            existingOrder.setOrderStatus(orderStatus);
-        }
+        //Update fields from the OrderDTO if they are not null
+        if(orderDTO.getTotalPrice() != null) 
+            order.setTotalPrice(orderDTO.getTotalPrice());              //Update totalPrice if provided
 
-        // Save the updated order
-        existingOrder = orderRepository.save(existingOrder);
+        if(orderDTO.getOrderStatus() != null)
+            order.setOrderStatus(orderDTO.getOrderStatus());            //Update orderStatus if provided
 
-        // Return the updated DTO
-        return convertToDTO(existingOrder);
+        //Save the updated order entity
+        order = orderRepository.save(order);
+
+        //Convert the updated Order entity to OrderDTO and return it
+        return convertToDTO(order); //Return the DTO of the updated order
     }
 
-    // Delete an existing order
-    @Override
-    public void deleteOrder(Long oid) {
-        // Fetch the order from the repository
-        Optional<Order> orderOptional = orderRepository.findById(oid);
+    @Override   //Method to delete an existing order by its ID
+    public void deleteOrder(Long oid) 
+    {
+        //Fetch the order by its ID
+        Optional<Order> order = orderRepository.findById(oid);
 
-        // If the order is not found, throw a custom exception
-        if (orderOptional.isEmpty()) {
-            throw new OrderNotFoundException(oid);
-        }
+        //If the order is not found, throw an OrderNotFoundException
+        if(order.isEmpty()) 
+            throw new OrderNotFoundException(oid);  //Throw exception if the order to delete is not found
 
-        // Proceed to delete the order
-        orderRepository.delete(orderOptional.get());
+        orderRepository.delete(order.get());        //Proceed to delete the found order
     }
 
-    // Helper method to convert an Order entity to an OrderDTO
-    private OrderDTO convertToDTO(Order order) {
-        return OrderDTO.builder()
-                       .oid(order.getOid())
-                       .totalPrice(order.getTotalPrice())
-                       .orderStatus(order.getOrderStatus())
-                       .orderDateTime(order.getOrderDateTime())
-                       .build();
+    //Helper method to convert an Order entity to OrderDTO
+    private OrderDTO convertToDTO(Order order) 
+    {
+        //Map fields from Order entity to OrderDTO and return a new OrderDTO object
+        return OrderDTO.builder().oid(order.getOid()).totalPrice(order.getTotalPrice()).orderStatus(order.getOrderStatus())
+        .orderDateTime(order.getOrderDateTime()).build();  //Return the newly created OrderDTO
     }
 }
