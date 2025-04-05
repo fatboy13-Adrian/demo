@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import com.demo.Exception.Item.ItemInventoryNotFoundException;
 import com.demo.Exception.Item.ItemNotFoundException;
 import com.demo.Exception.Order.OrderNotFoundException;
 import com.demo.Exception.Payment.PaymentNotFoundException;
@@ -58,6 +60,11 @@ public class GlobalExceptionHandler
                 new ErrorResponse(ex.getMessage(), ex.getPid()), 
                 HttpStatus.NOT_FOUND
         );
+    }
+
+     @ExceptionHandler(ItemInventoryNotFoundException.class)
+    public ResponseEntity<String> handleItemInventoryNotFound(ItemInventoryNotFoundException ex) {
+        return new ResponseEntity<>("ItemInventory not found: " + ex.getMessage(), HttpStatus.NOT_FOUND);
     }
     
     //A fallback method to handle any other unhandled exceptions in the application

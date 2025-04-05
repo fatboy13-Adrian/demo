@@ -10,12 +10,11 @@ import com.demo.Repository.ItemRepository;
 import com.demo.Repository.InventoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional //Ensures the service method runs within a transaction context
 public class ItemInventoryServiceImpl implements ItemInventoryService 
 {
     private final ItemInventoryRepository itemInventoryRepository;
@@ -30,72 +29,70 @@ public class ItemInventoryServiceImpl implements ItemInventoryService
         this.inventoryRepository = inventoryRepository;
     }
 
-    //Converts an ItemInventory entity to ItemInventoryDTO
+    //Converts an ItemInventory entity to a DTO (Data Transfer Object)
     private ItemInventoryDTO toDTO(ItemInventory itemInventory) 
     {
-        return ItemInventoryDTO.builder().iid(itemInventory.getIid().getIid()).sid(itemInventory.getSid().getSid()).build();
+        return ItemInventoryDTO.builder().siid(itemInventory.getSiid()).iid(itemInventory.getIid().getIid()).sid(itemInventory.getSid().getSid())
+        .build();
     }
 
-    //Converts ItemInventoryDTO to ItemInventory entity
-    private ItemInventory toEntity(ItemInventoryDTO itemInventoryDTO) 
+    //Converts a DTO to an ItemInventory entity
+    private ItemInventory toEntity(ItemInventoryDTO dto) 
     {
-        //Find the Item and Inventory by their respective IDs
-        Item item = itemRepository.findById(itemInventoryDTO.getIid()).orElseThrow(() -> new ItemInventoryNotFoundException(itemInventoryDTO.getIid()));
-        Inventory inventory = inventoryRepository.findById(itemInventoryDTO.getSid()).orElseThrow(() -> new ItemInventoryNotFoundException(itemInventoryDTO.getSid()));
+        //Find the item using its ID from the repository or throw an exception if not found
+        Item item = itemRepository.findById(dto.getIid()).orElseThrow(() -> new ItemInventoryNotFoundException(dto.getIid()));
+        
+        //Find the inventory using its ID from the repository or throw an exception if not found
+        Inventory inventory = inventoryRepository.findById(dto.getSid()).orElseThrow(() -> new ItemInventoryNotFoundException(dto.getSid()));
 
-        //Build and return ItemInventory entity
-        return ItemInventory.builder().iid(item).sid(inventory).build();
+        //Return a new ItemInventory entity built using the DTO values
+        return ItemInventory.builder().siid(dto.getSiid()).iid(item) .sid(inventory).build();
     }
 
-    @Override   //Creates a new ItemInventory and returns the DTO of the created entity
-    public ItemInventoryDTO createItemInventory(ItemInventoryDTO itemInventoryDTO) 
+    @Override
+    public ItemInventoryDTO createItemInventory(ItemInventoryDTO dto) 
     {
-        //Convert DTO to entity and save it to the repository
-        ItemInventory itemInventory = toEntity(itemInventoryDTO);
-
-        //Save entity and map saved entity to DTO
-        ItemInventory savedEntity = itemInventoryRepository.save(itemInventory);
-        return toDTO(savedEntity); //Return saved entity as DTO
+        ItemInventory entity = toEntity(dto);                           //Convert DTO to entity for saving
+        ItemInventory saved = itemInventoryRepository.save(entity);     //Save the entity using the repository
+        return toDTO(saved);                                            //Convert the saved entity back to DTO and return it
     }
-    
-    @Override   //Retrieves a specific ItemInventory by its ID and returns the DTO
+
+    @Override
     public ItemInventoryDTO getItemInventory(Long siid) 
     {
-        //Fetch ItemInventory entity from the repository
+        //Retrieve the item inventory by siid from the repository or throw exception if not found
         ItemInventory itemInventory = itemInventoryRepository.findById(siid).orElseThrow(() -> new ItemInventoryNotFoundException(siid));
-        return toDTO(itemInventory);    //Return the ItemInventory as a DTO
+        return toDTO(itemInventory);    //Convert the entity to DTO and return it
     }
 
-    @Override   //Retrieves all ItemInventories and returns them as a list of DTOs
+    @Override
     public List<ItemInventoryDTO> getItemInventories() 
     {
-        //Retrieve all ItemInventory entities, map them to DTOs, and return
-        return itemInventoryRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList());
+        //Retrieve all item inventories from the repository
+        return itemInventoryRepository.findAll().stream().map(this::toDTO).collect(Collectors.toList()); 
     }
 
-    @Override   //Updates an existing ItemInventory and returns the updated DTO
-    public ItemInventoryDTO updateItemInventory(Long siid, ItemInventoryDTO itemInventoryDTO) 
+    @Override
+    public ItemInventoryDTO updateItemInventory(Long siid, ItemInventoryDTO dto) 
     {
-        //Find existing ItemInventory by ID
-        ItemInventory existingItemInventory = itemInventoryRepository.findById(siid).orElseThrow(() -> new ItemInventoryNotFoundException(siid));
+        //Check if the item inventory exists by its siid, if not throw an exception
+        itemInventoryRepository.findById(siid).orElseThrow(() -> new ItemInventoryNotFoundException(siid));
 
-        //Convert DTO to entity and update the existing entity
-        ItemInventory updatedEntity = toEntity(itemInventoryDTO);
-        existingItemInventory.setIid(updatedEntity.getIid());
-        existingItemInventory.setSid(updatedEntity.getSid());
+        //Update the DTO to ensure siid is included for the update
+        dto = ItemInventoryDTO.builder().siid(siid).iid(dto.getIid()).sid(dto.getSid()).build();
 
-        //Save updated entity and return it as DTO
-        ItemInventory savedEntity = itemInventoryRepository.save(existingItemInventory);
-        return toDTO(savedEntity);
+        ItemInventory updated = toEntity(dto);                          //Convert the updated DTO back to an entity for saving
+        ItemInventory saved = itemInventoryRepository.save(updated);    //Save the updated entity using the repository
+        return toDTO(saved);                                            //Convert the saved entity back to DTO and return it
     }
 
-    @Override   //Deletes an ItemInventory by its ID
+    @Override
     public void deleteItemInventory(Long siid) 
     {
-        //Find the existing ItemInventory by ID
-        ItemInventory existingItemInventory = itemInventoryRepository.findById(siid).orElseThrow(() -> new ItemInventoryNotFoundException(siid));
-
-        //Delete the ItemInventory entity
-        itemInventoryRepository.delete(existingItemInventory);  //Cascade delete on related entities if configured
+        //Retrieve the item inventory by siid, or throw an exception if not found
+        ItemInventory itemInventory = itemInventoryRepository.findById(siid).orElseThrow(() -> new ItemInventoryNotFoundException(siid));
+        
+        //Delete the item inventory from the repository
+        itemInventoryRepository.delete(itemInventory);
     }
 }

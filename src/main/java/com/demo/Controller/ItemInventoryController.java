@@ -1,94 +1,113 @@
 package com.demo.Controller;
 import com.demo.DTO.ItemInventoryDTO;
-import com.demo.Service.ItemInventoryServiceImpl;
 import com.demo.Exception.Item.ItemInventoryNotFoundException;
+import com.demo.Interface.ItemInventoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @RestController
-@RequestMapping("/item-inventory")      //Base URL for this controller's endpoints
+@RequestMapping("/item-inventories")
+@Slf4j  //Lombok annotation for logging
 public class ItemInventoryController 
 {
-    private final ItemInventoryServiceImpl itemInventoryService;
+    private final ItemInventoryService itemInventoryService;
 
-    //Constructor injection for ItemInventoryServiceImpl
-    public ItemInventoryController(ItemInventoryServiceImpl itemInventoryService) 
+    //Constructor injection for the ItemInventoryService
+    public ItemInventoryController(ItemInventoryService itemInventoryService) 
     {
         this.itemInventoryService = itemInventoryService;
     }
 
     @PostMapping    //Endpoint to create a new ItemInventory
-    public ResponseEntity<ItemInventoryDTO> createItemInventory(@RequestBody ItemInventoryDTO itemInventoryDTO) 
-    {
-        //Call the service to create the ItemInventory
-        ItemInventoryDTO createdItemInventory = itemInventoryService.createItemInventory(itemInventoryDTO);
-
-        //Return the created ItemInventory with HTTP status 201 (Created)
-        return new ResponseEntity<>(createdItemInventory, HttpStatus.CREATED);
+    public ResponseEntity<ItemInventoryDTO> createItemInventory(@RequestBody ItemInventoryDTO itemInventoryDTO) {
+        try 
+        {
+            //Log the request details for creating an ItemInventory
+            log.info("Creating ItemInventory with details: {}", itemInventoryDTO);
+            
+            //Call service to create the item inventory and return the created DTO
+            ItemInventoryDTO createdItemInventory = itemInventoryService.createItemInventory(itemInventoryDTO);
+            return new ResponseEntity<>(createdItemInventory, HttpStatus.CREATED);  //Return created status
+        } 
+        
+        catch (ItemInventoryNotFoundException e) 
+        {
+            //Log error if the item inventory could not be created
+            log.error("Error creating ItemInventory: {}", e.getMessage());
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);  //Return NOT_FOUND if exception is thrown
+        }
     }
 
-    @GetMapping("/{siid}")  //Endpoint to get a specific ItemInventory by its ID
+    @GetMapping("/{siid}")  //Endpoint to retrieve an ItemInventory by its primary key (siid)
     public ResponseEntity<ItemInventoryDTO> getItemInventory(@PathVariable Long siid) 
     {
         try 
         {
-            //Fetch the ItemInventory details from the service using the provided ID
-            ItemInventoryDTO itemInventoryDTO = itemInventoryService.getItemInventory(siid);
+            //Log the request details for retrieving an ItemInventory
+            log.info("Retrieving ItemInventory with siid: {}", siid);
             
-            //Return the found ItemInventory with HTTP status 200 (OK)
-            return new ResponseEntity<>(itemInventoryDTO, HttpStatus.OK);
+            //Call service to get the item inventory by its siid
+            ItemInventoryDTO itemInventoryDTO = itemInventoryService.getItemInventory(siid);
+            return new ResponseEntity<>(itemInventoryDTO, HttpStatus.OK);   //Return OK status with the item inventory
         } 
         
         catch (ItemInventoryNotFoundException e) 
         {
-            //If the ItemInventory is not found, return HTTP status 404 (Not Found)
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            //Log error if item inventory is not found
+            log.error("ItemInventory with siid {} not found: {}", siid, e.getMessage());
+            return ResponseEntity.notFound().build();   //Return NOT_FOUND if item inventory doesn't exist
         }
     }
 
-    @GetMapping //Endpoint to get a list of all ItemInventories
-    public ResponseEntity<List<ItemInventoryDTO>> getItemInventories() 
+    @GetMapping //Endpoint to retrieve all ItemInventories
+    public ResponseEntity<List<ItemInventoryDTO>> getAllItemInventories() 
     {
-        //Fetch the list of all ItemInventories from the service
-        List<ItemInventoryDTO> itemInventories = itemInventoryService.getItemInventories();
+        //Log the request to retrieve all item inventories
+        log.info("Request to retrieve all ItemInventories");
 
-        //Return the list with HTTP status 200 (OK)
-        return new ResponseEntity<>(itemInventories, HttpStatus.OK);
+        //Call service to get all item inventories
+        List<ItemInventoryDTO> itemInventoryDTOList = itemInventoryService.getItemInventories();
+        return new ResponseEntity<>(itemInventoryDTOList, HttpStatus.OK);   //Return OK status with the list of inventories
     }
 
     @PutMapping("/{siid}")  //Endpoint to update an existing ItemInventory
-    public ResponseEntity<ItemInventoryDTO> updateItemInventory(@PathVariable Long siid,@RequestBody ItemInventoryDTO itemInventoryDTO) 
-    {
+    public ResponseEntity<ItemInventoryDTO> updateItemInventory(@PathVariable Long siid, @RequestBody ItemInventoryDTO itemInventoryDTO) {
         try 
         {
-            //Call the service to update the ItemInventory
-            ItemInventoryDTO updatedItemInventory = itemInventoryService.updateItemInventory(siid, itemInventoryDTO);
+            //Log the request details for updating an ItemInventory
+            log.info("Updating ItemInventory with siid: {} and new details: {}", siid, itemInventoryDTO);
             
-            //Return the updated ItemInventory with HTTP status 200 (OK)
-            return new ResponseEntity<>(updatedItemInventory, HttpStatus.OK);
+            //Call service to update the item inventory and return the updated DTO
+            ItemInventoryDTO updatedItemInventory = itemInventoryService.updateItemInventory(siid, itemInventoryDTO);
+            return new ResponseEntity<>(updatedItemInventory, HttpStatus.OK);   //Return OK status with the updated item
         } 
         
         catch (ItemInventoryNotFoundException e) 
         {
-            //If the ItemInventory is not found, return HTTP status 404 (Not Found)
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);    
+            //Log error if item inventory is not found for update
+            log.error("ItemInventory with siid {} not found for update: {}", siid, e.getMessage());
+            return ResponseEntity.notFound().build();   //Return NOT_FOUND if item inventory doesn't exist
         }
     }
 
-    @DeleteMapping("/{siid}")   //Endpoint to delete an ItemInventory by its ID
+    @DeleteMapping("/{siid}")   //Endpoint to delete an ItemInventory by its primary key (siid)
     public ResponseEntity<Void> deleteItemInventory(@PathVariable Long siid) 
     {
         try 
-        { 
-            itemInventoryService.deleteItemInventory(siid);     //Call the service to delete the ItemInventory by ID
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); //Return HTTP status 204 (No Content) after successful deletion
+        {
+            log.info("Deleting ItemInventory with siid: {}", siid); //Log the request to delete an ItemInventory  
+            itemInventoryService.deleteItemInventory(siid);                 //Call service to delete the item inventory by its siid
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);             //Return NO_CONTENT status on successful deletion
         } 
         
         catch (ItemInventoryNotFoundException e) 
         {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);  //If the ItemInventory is not found, return HTTP status 404 (Not Found)
+            //Log error if item inventory is not found for deletion
+            log.error("ItemInventory with siid {} not found for deletion: {}", siid, e.getMessage());
+            return ResponseEntity.notFound().build();   //Return NOT_FOUND if item inventory doesn't exist
         }
     }
 }
