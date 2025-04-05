@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)                 //Extends with Mockito for mocking
-class PaymentServiceImplTest 
+public class PaymentServiceImplTest 
 {
     @Mock
     private PaymentRepository paymentRepository;    //Mock the PaymentRepository for test isolation

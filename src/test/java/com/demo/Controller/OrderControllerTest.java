@@ -19,7 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)             //Tells JUnit to use MockitoExtension for mock creation
-class OrderControllerTest 
+public class OrderControllerTest 
 {
     @Mock
     private OrderService orderService;          //Mocking OrderService to isolate controller testing

@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class) //Enable Mockito support for JUnit tests
-class InventoryControllerTest 
+public class InventoryControllerTest 
 {
     @Mock //Mocking the InventoryService to simulate its behavior without actually calling the real service
     private InventoryService inventoryService;

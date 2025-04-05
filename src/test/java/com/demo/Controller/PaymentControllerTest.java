@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)                 //This annotation ensures Mockito is used to mock dependencies
-class PaymentControllerTest 
+public class PaymentControllerTest 
 {
     @Mock
     private PaymentServiceImpl paymentService;      //Mocking the PaymentServiceImpl to isolate the controller for testing

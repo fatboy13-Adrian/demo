@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class) //Enables Mockito support for JUnit 5 tests
-class InventoryServiceImplTest 
+public class InventoryServiceImplTest 
 {
     @Mock //Creates a mock instance of InventoryRepository
     private InventoryRepository inventoryRepository;
