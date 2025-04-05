@@ -138,7 +138,6 @@ public class InventoryControllerTest
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
-    
     @Test   //Positive test case: Deleting an inventory
     void testDeleteInventory_Success() 
     {

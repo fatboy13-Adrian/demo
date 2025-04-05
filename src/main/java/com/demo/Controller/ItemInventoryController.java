@@ -19,7 +19,6 @@ public class ItemInventoryController
         this.itemInventoryService = itemInventoryService;
     }
 
-    
     @PostMapping    //Endpoint to create a new ItemInventory
     public ResponseEntity<ItemInventoryDTO> createItemInventory(@RequestBody ItemInventoryDTO itemInventoryDTO) 
     {
