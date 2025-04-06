@@ -46,7 +46,6 @@ public class Order
     @Column(name = "orderDateTime", nullable = false, updatable = false)    //Maps to the orderDateTime column
     private LocalDateTime orderDateTime;                                    //Date and time when the order was created
 
-    
     @PrePersist //This method is automatically called before the entity is persisted to the database
     protected void onCreate() 
     {
