@@ -5,4 +5,5 @@ import com.demo.Entity.ItemInventory;
 
 public interface ItemInventoryRepository extends JpaRepository<ItemInventory, Long>
 {
+    
 }
