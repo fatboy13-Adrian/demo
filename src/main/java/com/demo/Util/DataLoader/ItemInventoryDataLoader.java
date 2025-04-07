@@ -17,7 +17,7 @@ public class ItemInventoryDataLoader implements CommandLineRunner
     private final ItemInventoryRepository itemInventoryRepository;
 
     //Constructor for dependency injection of the repositories
-    public ItemInventoryDataLoader(ItemRepository itemRepository, InventoryRepository inventoryRepository,ItemInventoryRepository itemInventoryRepository) 
+    public ItemInventoryDataLoader(ItemRepository itemRepository, InventoryRepository inventoryRepository, ItemInventoryRepository itemInventoryRepository) 
     {
         this.itemRepository = itemRepository;
         this.inventoryRepository = inventoryRepository;
@@ -40,8 +40,8 @@ public class ItemInventoryDataLoader implements CommandLineRunner
         List<Inventory> inventories = inventoryRepository.findAll();
 
         //Check if either Items or Inventories are empty
-        if (items.isEmpty() || inventories.isEmpty()) 
-        {
+        if (items.isEmpty() || inventories.isEmpty())
+         {
             //Log a message if no Items or Inventories are found
             System.out.println("No existing Items or Inventories found. Skipping linkage.");
             return;
@@ -57,7 +57,7 @@ public class ItemInventoryDataLoader implements CommandLineRunner
             Inventory inventory = inventories.get(i);   //Get the current Inventory
 
             //Create a new ItemInventory record that links the current Item and Inventory
-            ItemInventory itemInventory = ItemInventory.builder().iid(item).sid(inventory).build();
+            ItemInventory itemInventory = ItemInventory.builder().iid(item) .sid(inventory).build();
 
             //Save the ItemInventory entity to the database
             itemInventoryRepository.save(itemInventory);
