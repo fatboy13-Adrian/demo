@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @RestController
-@RequestMapping("/item-inventories")
+@RequestMapping("/item-inventory")
 @Slf4j  //Lombok annotation for logging
 public class ItemInventoryController 
 {
