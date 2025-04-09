@@ -1,4 +1,4 @@
-package com.demo.Util.DataLoader;
+package com.demo.Util.DataLoader.Item;
 
 import com.demo.Entity.Item;
 import com.demo.Entity.Inventory;
@@ -9,39 +9,42 @@ import com.demo.Repository.ItemInventoryRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 @Component
 public class ItemInventoryDataLoader implements CommandLineRunner 
 {
-    private final ItemRepository itemRepository; //Repository to access Item data
-    private final InventoryRepository inventoryRepository; //Repository to access Inventory data
-    private final ItemInventoryRepository itemInventoryRepository; //Repository to access ItemInventory data
+    private final ItemRepository itemRepository;                    //Repository to access Item data
+    private final InventoryRepository inventoryRepository;          //Repository to access Inventory data
+    private final ItemInventoryRepository itemInventoryRepository;  //Repository to access ItemInventory data
 
     //Constructor for dependency injection of the repositories
-    public ItemInventoryDataLoader(ItemRepository itemRepository, InventoryRepository inventoryRepository, ItemInventoryRepository itemInventoryRepository) {
+    public ItemInventoryDataLoader(ItemRepository itemRepository, InventoryRepository inventoryRepository, ItemInventoryRepository itemInventoryRepository) 
+    {
         this.itemRepository = itemRepository;
         this.inventoryRepository = inventoryRepository;
         this.itemInventoryRepository = itemInventoryRepository;
     }
 
     @Override
-    public void run(String... args) {
+    public void run(String... args) 
+    {
         //Proceed only if no ItemInventory records exist in the database
-        if (itemInventoryRepository.count() == 0) {
-            linkExistingItemsWithInventories(); //Trigger the method to link items with inventories
-        }
+        if(itemInventoryRepository.count() == 0)
+            linkExistingItemsWithInventories();     //Trigger the method to link items with inventories
     }
 
     @Transactional //Ensures that all operations in this method are executed as a single transaction
-    private void linkExistingItemsWithInventories() {
-        List<Item> items = itemRepository.findAll(); //Fetch all items from the database
-        List<Inventory> inventories = inventoryRepository.findAll(); //Fetch all inventories from the database
+    private void linkExistingItemsWithInventories() 
+    {
+        List<Item> items = itemRepository.findAll();                    //Fetch all items from the database
+        List<Inventory> inventories = inventoryRepository.findAll();    //Fetch all inventories from the database
 
         //Early exit if either Items or Inventories are missing
-        if (items.isEmpty() || inventories.isEmpty()) {
-            System.out.println("No existing Items or Inventories found. Skipping linkage."); //Log message if no items or inventories are found
+        if(items.isEmpty() || inventories.isEmpty()) 
+        {
+            //Log message if no items or inventories are found
+            System.out.println("No existing Items or Inventories found. Skipping linkage."); 
             return; //Exit the method if there are no items or inventories
         }
 
@@ -49,7 +52,8 @@ public class ItemInventoryDataLoader implements CommandLineRunner
         int inventoryIndex = 0; //Start from the first inventory (index 0)
 
         //Iterate through all items and associate them with inventories
-        for (Item item : items) {
+        for (Item item : items) 
+        {
             //Get the current inventory using the inventoryIndex, linking the item to the inventory
             Inventory inventory = inventories.get(inventoryIndex); 
 
@@ -65,12 +69,10 @@ public class ItemInventoryDataLoader implements CommandLineRunner
     }
 
     //Helper method to create and save ItemInventory link
-    private void createAndSaveItemInventoryLink(Item item, Inventory inventory) {
+    private void createAndSaveItemInventoryLink(Item item, Inventory inventory) 
+    {
         //Create a new ItemInventory instance that links the current Item and Inventory
-        ItemInventory itemInventory = ItemInventory.builder()
-                .iid(item) //Link the current Item to the ItemInventory
-                .sid(inventory) //Link the current Inventory to the ItemInventory
-                .build(); //Build the ItemInventory instance using the builder
+        ItemInventory itemInventory = ItemInventory.builder().iid(item).sid(inventory).build();
 
         //Save the newly created ItemInventory instance to the database
         itemInventoryRepository.save(itemInventory);

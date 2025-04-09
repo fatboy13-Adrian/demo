@@ -2,7 +2,7 @@ package com.demo.Util;
 
 public class ErrorResponse 
 {
-    private String error;   //Instance variable to store the error message
+    private String error;       //Instance variable to store the error message
 
     //Constructor that initializes the error message
     public ErrorResponse(String error) 

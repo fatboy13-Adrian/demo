@@ -1,4 +1,4 @@
-package com.demo.Util.DataLoader;
+package com.demo.Util.DataLoader.Order;
 import com.demo.Entity.Order;
 import com.demo.Enum.OrderStatus;
 import com.demo.Repository.OrderRepository;

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/order-item")  //Base URL for OrderItem related endpoints
+@RequestMapping("/order_item")  //Base URL for OrderItem related endpoints
 public class OrderItemController 
 {
     private final OrderItemService orderItemService;

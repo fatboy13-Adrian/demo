@@ -1,4 +1,4 @@
-package com.demo.Util.DataLoader;
+package com.demo.Util.DataLoader.Inventory;
 import com.demo.Entity.Inventory;
 import com.demo.Repository.InventoryRepository;
 import org.springframework.stereotype.Component;

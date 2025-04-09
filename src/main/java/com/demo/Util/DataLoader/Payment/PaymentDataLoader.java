@@ -1,4 +1,4 @@
-package com.demo.Util.DataLoader;
+package com.demo.Util.DataLoader.Payment;
 import com.demo.Entity.Payment;
 import com.demo.Enum.PaymentMode;
 import com.demo.Enum.PaymentStatus;

@@ -1,4 +1,4 @@
-package com.demo.Util.DataLoader;
+package com.demo.Util.DataLoader.Item;
 import com.demo.Entity.Item;
 import com.demo.Repository.ItemRepository;
 import org.springframework.boot.CommandLineRunner;
