@@ -1,7 +1,8 @@
 package com.demo.Util.DataLoader.Order;
-import com.demo.Entity.Order;
-import com.demo.Enum.OrderStatus;
-import com.demo.Repository.OrderRepository;
+import com.demo.Entity.Order.Order;
+import com.demo.Enum.Order.OrderStatus;
+import com.demo.Repository.Order.OrderRepository;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;

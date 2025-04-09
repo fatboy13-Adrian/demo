@@ -1,6 +1,6 @@
 package com.demo.Util.DataLoader.Item;
-import com.demo.Entity.Item;
-import com.demo.Repository.ItemRepository;
+import com.demo.Entity.Item.Item;
+import com.demo.Repository.Item.ItemRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;

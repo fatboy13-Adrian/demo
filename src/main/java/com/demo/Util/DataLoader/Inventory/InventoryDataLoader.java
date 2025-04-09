@@ -1,6 +1,6 @@
 package com.demo.Util.DataLoader.Inventory;
-import com.demo.Entity.Inventory;
-import com.demo.Repository.InventoryRepository;
+import com.demo.Entity.Inventory.Inventory;
+import com.demo.Repository.Inventory.InventoryRepository;
 import org.springframework.stereotype.Component;
 import jakarta.annotation.PostConstruct;
 

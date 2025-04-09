@@ -1,6 +1,5 @@
 package com.demo.Entity.Cart;
-import com.demo.Entity.User;
-
+import com.demo.Entity.User.User;
 import jakarta.persistence.*; 
 import lombok.*; 
 

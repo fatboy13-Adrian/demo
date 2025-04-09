@@ -1,6 +1,5 @@
 package com.demo.Interface.Cart;
 import java.util.List;
-
 import com.demo.DTO.Cart.CartDTO;
 
 public interface CartService 

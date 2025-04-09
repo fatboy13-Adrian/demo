@@ -1,11 +1,10 @@
 package com.demo.Util.DataLoader.Item;
-
-import com.demo.Entity.Item;
-import com.demo.Entity.Inventory;
-import com.demo.Entity.ItemInventory;
-import com.demo.Repository.ItemRepository;
-import com.demo.Repository.InventoryRepository;
-import com.demo.Repository.ItemInventoryRepository;
+import com.demo.Entity.Inventory.Inventory;
+import com.demo.Entity.Item.Item;
+import com.demo.Entity.Item.ItemInventory;
+import com.demo.Repository.Inventory.InventoryRepository;
+import com.demo.Repository.Item.ItemInventoryRepository;
+import com.demo.Repository.Item.ItemRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;

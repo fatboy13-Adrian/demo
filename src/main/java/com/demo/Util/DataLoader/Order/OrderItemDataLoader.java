@@ -2,12 +2,14 @@ package com.demo.Util.DataLoader.Order;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import com.demo.Entity.Item;
-import com.demo.Entity.Order;
-import com.demo.Entity.OrderItem;
-import com.demo.Repository.ItemRepository;
-import com.demo.Repository.OrderItemRepository;
-import com.demo.Repository.OrderRepository;
+
+import com.demo.Entity.Item.Item;
+import com.demo.Entity.Order.Order;
+import com.demo.Entity.Order.OrderItem;
+import com.demo.Repository.Item.ItemRepository;
+import com.demo.Repository.Order.OrderItemRepository;
+import com.demo.Repository.Order.OrderRepository;
+
 import java.util.List;
 
 @Component  //Marks this class as a Spring component to be discovered and instantiated by Spring

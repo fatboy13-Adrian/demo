@@ -2,12 +2,14 @@ package com.demo.Util.DataLoader.Order;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import com.demo.Entity.Order;
-import com.demo.Entity.OrderPayment;
-import com.demo.Entity.Payment;
-import com.demo.Repository.OrderPaymentRepository;
-import com.demo.Repository.OrderRepository;
-import com.demo.Repository.PaymentRepository;
+
+import com.demo.Entity.Order.Order;
+import com.demo.Entity.Order.OrderPayment;
+import com.demo.Entity.Payment.Payment;
+import com.demo.Repository.Order.OrderPaymentRepository;
+import com.demo.Repository.Order.OrderRepository;
+import com.demo.Repository.Payment.PaymentRepository;
+
 import java.util.List;
 
 @Component  //Marks this class as a Spring-managed component, allowing it to be automatically detected and instantiated

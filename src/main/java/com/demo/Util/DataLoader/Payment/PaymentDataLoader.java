@@ -1,8 +1,8 @@
 package com.demo.Util.DataLoader.Payment;
-import com.demo.Entity.Payment;
-import com.demo.Enum.PaymentMode;
-import com.demo.Enum.PaymentStatus;
-import com.demo.Repository.PaymentRepository;
+import com.demo.Entity.Payment.Payment;
+import com.demo.Enum.Payment.PaymentMode;
+import com.demo.Enum.Payment.PaymentStatus;
+import com.demo.Repository.Payment.PaymentRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
