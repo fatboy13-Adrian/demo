@@ -23,7 +23,7 @@ public class CartItem
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)    //Defines a many-to-one relationship with Item
     @JoinColumn(name = "cid", nullable = false)                         //Specifies the foreign key column to join on
-    private Item cid;                                                   //The cart associated with this item record
+    private Cart cid;                                                   //The cart associated with this item record
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)    //Defines a many-to-one relationship with Item
     @JoinColumn(name = "iid", nullable = false)                         //Specifies the foreign key column to join on

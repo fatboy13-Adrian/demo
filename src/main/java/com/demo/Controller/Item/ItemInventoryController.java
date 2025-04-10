@@ -22,7 +22,8 @@ public class ItemInventoryController
     }
 
     @PostMapping    //Endpoint to create a new ItemInventory
-    public ResponseEntity<ItemInventoryDTO> createItemInventory(@RequestBody ItemInventoryDTO itemInventoryDTO) {
+    public ResponseEntity<ItemInventoryDTO> createItemInventory(@RequestBody ItemInventoryDTO itemInventoryDTO) 
+    {
         try 
         {
             //Log the request details for creating an ItemInventory
@@ -33,7 +34,7 @@ public class ItemInventoryController
             return new ResponseEntity<>(createdItemInventory, HttpStatus.CREATED);  //Return created status
         } 
         
-        catch (ItemInventoryNotFoundException e) 
+        catch(ItemInventoryNotFoundException e) 
         {
             //Log error if the item inventory could not be created
             log.error("Error creating ItemInventory: {}", e.getMessage());
@@ -54,7 +55,7 @@ public class ItemInventoryController
             return new ResponseEntity<>(itemInventoryDTO, HttpStatus.OK);   //Return OK status with the item inventory
         } 
         
-        catch (ItemInventoryNotFoundException e) 
+        catch(ItemInventoryNotFoundException e) 
         {
             //Log error if item inventory is not found
             log.error("ItemInventory with siid {} not found: {}", siid, e.getMessage());
@@ -74,7 +75,8 @@ public class ItemInventoryController
     }
 
     @PutMapping("/{siid}")  //Endpoint to update an existing ItemInventory
-    public ResponseEntity<ItemInventoryDTO> updateItemInventory(@PathVariable Long siid, @RequestBody ItemInventoryDTO itemInventoryDTO) {
+    public ResponseEntity<ItemInventoryDTO> updateItemInventory(@PathVariable Long siid, @RequestBody ItemInventoryDTO itemInventoryDTO) 
+    {
         try 
         {
             //Log the request details for updating an ItemInventory
@@ -85,7 +87,7 @@ public class ItemInventoryController
             return new ResponseEntity<>(updatedItemInventory, HttpStatus.OK);   //Return OK status with the updated item
         } 
         
-        catch (ItemInventoryNotFoundException e) 
+        catch(ItemInventoryNotFoundException e) 
         {
             //Log error if item inventory is not found for update
             log.error("ItemInventory with siid {} not found for update: {}", siid, e.getMessage());
@@ -103,7 +105,7 @@ public class ItemInventoryController
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);             //Return NO_CONTENT status on successful deletion
         } 
         
-        catch (ItemInventoryNotFoundException e) 
+        catch(ItemInventoryNotFoundException e) 
         {
             //Log error if item inventory is not found for deletion
             log.error("ItemInventory with siid {} not found for deletion: {}", siid, e.getMessage());
