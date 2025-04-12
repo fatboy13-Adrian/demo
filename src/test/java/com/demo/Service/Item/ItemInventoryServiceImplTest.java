@@ -49,8 +49,7 @@ public class ItemInventoryServiceImplTest
         inventory.setSid(1L);       //Setting Inventory ID
 
         //Building the ItemInventory object with associations
-        itemInventory = ItemInventory.builder().siid(100L).iid(item)
-        .sid(inventory).build();
+        itemInventory = ItemInventory.builder().siid(100L).iid(item).sid(inventory).build();
 
         //Building the DTO object corresponding to ItemInventory
         itemInventoryDTO = ItemInventoryDTO.builder().siid(100L).iid(item.getIid())
