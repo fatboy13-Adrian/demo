@@ -7,6 +7,9 @@ import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import jakarta.persistence.EntityNotFoundException;
+
+import com.demo.Exception.Category.CategoryNotFoundException;
+import com.demo.Exception.Category.InvalidCategoryException;
 import com.demo.Exception.Item.ItemInventoryNotFoundException;
 import com.demo.Exception.Item.ItemNotFoundException;
 import com.demo.Exception.Order.OrderNotFoundException;
@@ -98,5 +101,15 @@ public class GlobalExceptionHandler
     private ResponseEntity<String> buildErrorResponse(String message, HttpStatus status) 
     {
         return new ResponseEntity<>(message, status);   //Return a ResponseEntity containing the error message and the appropriate HTTP status
+    }
+
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<String> handleCategoryNotFound(CategoryNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(InvalidCategoryException.class)
+    public ResponseEntity<String> handleInvalidCategory(InvalidCategoryException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
