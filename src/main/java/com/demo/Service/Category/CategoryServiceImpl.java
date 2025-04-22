@@ -1,129 +1,103 @@
 package com.demo.Service.Category;
 
+import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.demo.DTO.Category.CategoryDTO;
 import com.demo.Entity.Category.Category;
 import com.demo.Exception.Category.CategoryNotFoundException;
-import com.demo.Exception.Category.InvalidCategoryException;
 import com.demo.Interface.Category.CategoryService;
 import com.demo.Repository.Category.CategoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-public class CategoryServiceImpl implements CategoryService {
-
+public class CategoryServiceImpl implements CategoryService 
+{
+    private static final Logger logger = LoggerFactory.getLogger(CategoryServiceImpl.class);
     private final CategoryRepository categoryRepository;
 
-    @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository) 
+    {
         this.categoryRepository = categoryRepository;
     }
 
     @Override
-    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
-        // Validation check
-        if (categoryDTO.getCatName() == null || categoryDTO.getCatName().trim().isEmpty()) {
-            throw new InvalidCategoryException("Category name cannot be null or empty");
-        }
-        
-        Category category = Category.builder()
-                .catName(categoryDTO.getCatName())
-                .description(categoryDTO.getDescription())
-                .build();
-
-        Category savedCategory = categoryRepository.save(category);
-        
-        return CategoryDTO.builder()
-                .catId(savedCategory.getCatId())
-                .catName(savedCategory.getCatName())
-                .description(savedCategory.getDescription())
-                .build();
+    public CategoryDTO createCategory(CategoryDTO categoryDTO) 
+    {
+        Category newCategory = convertToEntity(categoryDTO);
+        Category savedCategory = categoryRepository.save(newCategory);
+        logger.info("Created new category with ID: {}", savedCategory.getCategoryId());
+        return convertToDTO(savedCategory);
     }
 
     @Override
-    public CategoryDTO getCategory(Long catId) {
-        // Fetching category from the database
-        Optional<Category> categoryOptional = categoryRepository.findById(catId);
+    public CategoryDTO getCategory(Long categoryId) 
+    {
+        Category category = findById(categoryId);
+        return convertToDTO(category);
+    }
 
-        // If category is not found, throw CategoryNotFoundException
-        if (categoryOptional.isEmpty()) {
-            throw new CategoryNotFoundException(catId);
-        }
+    @Override
+    public List<CategoryDTO> getCategories() 
+    {
+        return categoryRepository.findAll()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
-        Category category = categoryOptional.get();
-        
+    @Override
+    public CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDTO) 
+    {
+        Category existingCategory = findById(categoryId);
+        updateCategoryFields(existingCategory, categoryDTO);
+        Category updatedCategory = categoryRepository.save(existingCategory);
+        logger.info("Updated category with ID: {}", categoryId);
+        return convertToDTO(updatedCategory);
+    }
+
+    @Override
+    public void deleteCategory(Long categoryId) 
+    {
+        Category category = findById(categoryId);
+        categoryRepository.delete(category);
+        logger.info("Deleted category with ID: {}", categoryId);
+    }
+
+    private Category findById(Long categoryId) 
+    {
+        return categoryRepository.findById(categoryId).orElseThrow(() -> {
+            logger.error("Category with ID {} not found", categoryId);
+            return new CategoryNotFoundException(categoryId);
+        });
+    }
+
+    private void updateCategoryFields(Category existingCategory, CategoryDTO categoryDTO) 
+    {
+        if (categoryDTO.getCategoryName() != null)
+            existingCategory.setCategoryName(categoryDTO.getCategoryName());
+
+        if (categoryDTO.getDescription() != null)
+            existingCategory.setDescription(categoryDTO.getDescription());
+    }
+
+    private CategoryDTO convertToDTO(Category category) 
+    {
         return CategoryDTO.builder()
-                .catId(category.getCatId())
-                .catName(category.getCatName())
+                .categoryId(category.getCategoryId())
+                .categoryName(category.getCategoryName())
                 .description(category.getDescription())
                 .build();
     }
 
-    @Override
-    public List<CategoryDTO> getCategories() {
-        // Fetching all categories from the database
-        List<Category> categories = categoryRepository.findAll();
-        
-        // Mapping Category entities to CategoryDTO
-        return categories.stream()
-                .map(category -> CategoryDTO.builder()
-                        .catId(category.getCatId())
-                        .catName(category.getCatName())
-                        .description(category.getDescription())
-                        .build())
-                .toList();
-    }
-
-    @Override
-    public CategoryDTO updateCategory(Long catId, CategoryDTO categoryDTO) {
-        // Validation check for the name field
-        if (categoryDTO.getCatName() != null && categoryDTO.getCatName().trim().isEmpty()) {
-            throw new InvalidCategoryException("Category name cannot be null or empty");
-        }
-
-        // Fetching the existing category from the database
-        Optional<Category> existingCategoryOptional = categoryRepository.findById(catId);
-
-        // If category is not found, throw CategoryNotFoundException
-        if (existingCategoryOptional.isEmpty()) {
-            throw new CategoryNotFoundException(catId);
-        }
-
-        Category existingCategory = existingCategoryOptional.get();
-
-        // Update only the non-null fields (partial update)
-        if (categoryDTO.getCatName() != null) {
-            existingCategory.setCatName(categoryDTO.getCatName());
-        }
-        if (categoryDTO.getDescription() != null) {
-            existingCategory.setDescription(categoryDTO.getDescription());
-        }
-
-        // Saving the updated category
-        Category updatedCategory = categoryRepository.save(existingCategory);
-
-        // Returning the updated CategoryDTO
-        return CategoryDTO.builder()
-                .catId(updatedCategory.getCatId())
-                .catName(updatedCategory.getCatName())
-                .description(updatedCategory.getDescription())
+    private Category convertToEntity(CategoryDTO categoryDTO) 
+    {
+        return Category.builder()
+                .categoryId(categoryDTO.getCategoryId())
+                .categoryName(categoryDTO.getCategoryName())
+                .description(categoryDTO.getDescription())
                 .build();
-    }
-
-    @Override
-    public void deleteCategory(Long catId) {
-        // Fetching the category to ensure it exists before deletion
-        Optional<Category> categoryOptional = categoryRepository.findById(catId);
-
-        // If category is not found, throw CategoryNotFoundException
-        if (categoryOptional.isEmpty()) {
-            throw new CategoryNotFoundException(catId);
-        }
-
-        // Deleting the category
-        categoryRepository.delete(categoryOptional.get());
     }
 }

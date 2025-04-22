@@ -1,14 +1,12 @@
 package com.demo.Controller.Category;
 
 import com.demo.DTO.Category.CategoryDTO;
-import com.demo.Exception.Category.CategoryNotFoundException;
-import com.demo.Exception.Category.InvalidCategoryException;
 import com.demo.Interface.Category.CategoryService;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -21,51 +19,40 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
+    // Create a new category
     @PostMapping
-    public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
-        try {
-            CategoryDTO createdCategory = categoryService.createCategory(categoryDTO);
-            return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
-        } catch (InvalidCategoryException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<CategoryDTO> createCategory(@RequestBody CategoryDTO categoryDTO) {
+        CategoryDTO createdCategory = categoryService.createCategory(categoryDTO);
+        return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{catId}")
-    public ResponseEntity<CategoryDTO> getCategory(@PathVariable Long catId) {
-        try {
-            CategoryDTO categoryDTO = categoryService.getCategory(catId);
-            return new ResponseEntity<>(categoryDTO, HttpStatus.OK);
-        } catch (CategoryNotFoundException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+    // Get category by ID
+    @GetMapping("/{categoryId}")
+    public ResponseEntity<CategoryDTO> getCategory(@PathVariable Long categoryId) {
+        CategoryDTO category = categoryService.getCategory(categoryId);
+        return ResponseEntity.ok(category);
     }
 
+    // Get all categories
     @GetMapping
-    public ResponseEntity<List<CategoryDTO>> getCategories() {
+    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
         List<CategoryDTO> categories = categoryService.getCategories();
-        return new ResponseEntity<>(categories, HttpStatus.OK);
+        return ResponseEntity.ok(categories);
     }
 
-    @PatchMapping("/{catId}")
-    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long catId, @Valid @RequestBody CategoryDTO categoryDTO) {
-        try {
-            CategoryDTO updatedCategory = categoryService.updateCategory(catId, categoryDTO);
-            return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
-        } catch (CategoryNotFoundException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        } catch (InvalidCategoryException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+    // Update category (partial or full)
+    @PutMapping("/{categoryId}")
+    public ResponseEntity<CategoryDTO> updateCategory(
+            @PathVariable Long categoryId,
+            @RequestBody CategoryDTO categoryDTO) {
+        CategoryDTO updatedCategory = categoryService.updateCategory(categoryId, categoryDTO);
+        return ResponseEntity.ok(updatedCategory);
     }
 
-    @DeleteMapping("/{catId}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long catId) {
-        try {
-            categoryService.deleteCategory(catId);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } catch (CategoryNotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    // Delete category
+    @DeleteMapping("/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long categoryId) {
+        categoryService.deleteCategory(categoryId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -5,9 +5,9 @@ import java.util.List;
 import com.demo.DTO.Category.CategoryDTO;
 
 public interface CategoryService {
-    CategoryDTO createCategory(CategoryDTO dto);
-    CategoryDTO getCategory(Long catId);
+    CategoryDTO createCategory(CategoryDTO categoryDTO);
+    CategoryDTO getCategory(Long categoryId);
     List<CategoryDTO> getCategories();
-    CategoryDTO updateCategory(Long catId, CategoryDTO dto);
-    void deleteCategory(Long catId);
+    CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDTO);
+    void deleteCategory(Long categoryId);
 }

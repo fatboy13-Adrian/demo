@@ -1,5 +1,4 @@
 package com.demo.Util.DataLoader.Product;
-
 import com.demo.Entity.Inventory.Inventory;
 import com.demo.Entity.Product.Product;
 import com.demo.Entity.Product.ProductInventory;
@@ -37,8 +36,8 @@ public class ProductInventoryDataLoader implements CommandLineRunner
     @Transactional //Ensures that all operations in this method are executed as a single transaction
     private void linkExistingProductsWithInventories() 
     {
-        List<Product> products = productRepository.findAll();              //Fetch all products from the database
-        List<Inventory> inventories = inventoryRepository.findAll();      //Fetch all inventories from the database
+        List<Product> products = productRepository.findAll();               //Fetch all products from the database
+        List<Inventory> inventories = inventoryRepository.findAll();        //Fetch all inventories from the database
 
         //Early exit if either Products or Inventories are missing
         if(products.isEmpty() || inventories.isEmpty()) 

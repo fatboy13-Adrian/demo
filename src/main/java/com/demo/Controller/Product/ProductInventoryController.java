@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 
 @RestController
-@RequestMapping("/product-inventory")
+@RequestMapping("/product-inventories")
 @Slf4j
 public class ProductInventoryController 
 {

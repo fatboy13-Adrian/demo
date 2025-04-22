@@ -2,8 +2,8 @@ package com.demo.Exception.Category;
 
 public class CategoryNotFoundException extends RuntimeException
 {
-    public CategoryNotFoundException(Long catId)
+    public CategoryNotFoundException(Long categoryId)
     {
-        super(String.format("Category with ID %d not found", catId));
+        super("Category with ID " +categoryId+ " not found");
     }
 }
